@@ -112,19 +112,19 @@ pct_all = df.values
 print(df)
 print("\n")
 
+if df.size == 0:
+    print("No combinations found")
+    exit()
+
 bt_no = 1
 node_sel = Node(None, pct_all, None)
 while True:
     max_a = 0
     top_nodes = np.empty(shape=(0), dtype=Node)
     for vol_int in node_sel.pct_nd * min_bottle / 100:
-        pct_nd = np.array(
-            [
-                j
-                for j in node_sel.pct_nd
-                if not np.allclose(j, vol_int * 100 / min_bottle)
-            ]
-        )
+        pct_nd = pct_nd_update(
+            node_sel.pct_nd, vol_int * 100 / min_bottle
+        )  # Remove vol_int proportion from pct_nd
         if node_sel.parent == None:
             root_node = Node(vol_int, pct_nd, 1)
         else:
@@ -180,7 +180,7 @@ while True:
     top_nodes = temp.copy()
 
     # Select batch with smallest max volumne
-    batch_max_vol = max_bottle
+    batch_max_vol = max_bottle + 1
     batch_no = 0
     for hist in top_nodes_hist:
         temp = np.sum(hist[-1])
@@ -210,4 +210,4 @@ while node1 != None:
 df.set_index("batch", inplace=True)
 df = df[::-1]
 
-# df.to_csv("vol_csv.csv")
+df.to_csv("vol_csv.csv")

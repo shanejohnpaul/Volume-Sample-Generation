@@ -116,19 +116,24 @@ if df.size == 0:
     print("No combinations found")
     exit()
 
-bt_no = 1
+bt_no = 0
 node_sel = Node(None, pct_all, None)
 while True:
     max_a = 0
     top_nodes = np.empty(shape=(0), dtype=Node)
     for vol_int in node_sel.pct_nd * min_bottle / 100:
-        pct_nd = pct_nd_update(
-            node_sel.pct_nd, vol_int * 100 / min_bottle
-        )  # Remove vol_int proportion from pct_nd
+
         if node_sel.parent == None:
-            root_node = Node(vol_int, pct_nd, 1)
+            root_node = Node(
+                vol_int, pct_nd_update(node_sel.pct_nd, vol_int * 100 / min_bottle), 1
+            )
         else:
-            root_node = Node(vol_int, pct_nd, 1, node_sel)
+            root_node = Node(
+                vol_int,
+                pct_nd_update(node_sel.pct_nd, vol_int * 100 / min_bottle),
+                1,
+                node_sel,
+            )
 
         edge_nodes = np.array([root_node])
 
@@ -191,14 +196,14 @@ while True:
         batch_no = batch_no + 1
 
     node_sel = top_nodes[batch_sel_no]
-    print(f"End of batch {bt_no}\n")
     bt_no = bt_no + 1
+    print(f"End of batch {bt_no}\n")
 
     if node_sel.pct_nd.size == 0:
         break
 
 node1 = node_sel
-bth_no = bt_no - 1
+bth_no = bt_no
 df = pd.DataFrame(columns=["batch"] + p)
 while node1 != None:
     df = df.append(
